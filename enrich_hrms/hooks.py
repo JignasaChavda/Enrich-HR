@@ -241,4 +241,53 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+fixtures = [
+    "Workflow",
+    "Workflow State",
+    "Workflow Action Master",
+    
+    {"dt":"Print Format","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]},
+    {"dt":"Custom Field","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]},
+    {"dt":"Property Setter","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]},
+    {"dt":"Client Script","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]},
+    {"dt":"Server Script","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]},
+    {"dt":"Report","filters":[
+        [
+            "module","in",[
+               "Enrich HRMS"
+            ],
+        ]
+    ]}
+
+]
 

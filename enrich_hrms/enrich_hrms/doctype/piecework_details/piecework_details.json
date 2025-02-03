@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-28 15:15:03.080751",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "employee_name",
+  "department",
+  "designation",
+  "column_break_c1wh",
+  "operation",
+  "pieces_completed",
+  "rate_per_piece",
+  "amount"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "columns": 2,
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "columns": 2,
+   "fieldname": "operation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Operation",
+   "options": "Operation"
+  },
+  {
+   "columns": 2,
+   "fieldname": "pieces_completed",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Pieces Completed"
+  },
+  {
+   "columns": 1,
+   "fetch_from": "operation.custom_per_piece_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "rate_per_piece",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rate per Piece",
+   "precision": "1"
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_c1wh",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-02-03 13:45:04.629348",
+ "modified_by": "Administrator",
+ "module": "Enrich HRMS",
+ "name": "Piecework Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
