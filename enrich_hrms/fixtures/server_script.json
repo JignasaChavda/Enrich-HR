@@ -1,1 +1,21 @@
-[]
+[
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "Before Save",
+  "enable_rate_limit": 0,
+  "event_frequency": "All",
+  "modified": "2025-02-10 12:30:27.595019",
+  "module": "Enrich HRMS",
+  "name": "Set checkin date",
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "reference_doctype": "Employee Checkin",
+  "script": "# formatted_time = frappe.utils.formatdate(doc.time, \"yyyy-mm-dd\") + doc.time[10:]\n# date_time = frappe.utils.get_datetime(formatted_time)\n# doc.custom_date = date_time.date()\n\ndate_time = frappe.utils.get_datetime(doc.time)\ndoc.custom_date = date_time.date()",
+  "script_type": "DocType Event"
+ }
+]

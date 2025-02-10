@@ -147,7 +147,16 @@ app_license = "mit"
 
 # Scheduled Tasks
 # ---------------
-
+scheduler_events = {
+    "set_attendance_date": {
+        "55 23 * * *": [
+            "enrich_hrms.utils.set_attendance_date"
+        ]
+    }
+    # "daily": [
+    #     "clevision.utils.get_last_sync_of_checkin"
+    # ]
+}
 # scheduler_events = {
 # 	"all": [
 # 		"enrich_hrms.tasks.all"
