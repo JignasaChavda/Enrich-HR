@@ -22,7 +22,18 @@
   "view": "Form"
  },
  {
-  "_liked_by": "[\"Administrator\"]",
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Attendance",
+  "enabled": 1,
+  "modified": "2025-02-10 12:56:58.023802",
+  "module": "Enrich HRMS",
+  "name": "Set fields read only for employees",
+  "script": "frappe.ui.form.on('Attendance', {\n    refresh(frm) {\n        \n        if (!frappe.user_roles.includes(\"HR Manager\") || !frappe.user_roles.includes(\"HR User\")) {\n                \n            const fields_to_restrict = [\"custom_work_hours_\", \"custom_overtime\", \"late_entry\", \"early_exit\", \"custom_remarks\", \"custom_late_entry_hours\", \"custom_early_exit_hours\"];\n            fields_to_restrict.forEach(field => {\n                frm.set_df_property(field, \"read_only\", 1);\n            });\n                \n                \n        }\n        \n   \n    }\n});\n",
+  "view": "Form"
+ },
+ {
+  "_liked_by": "[]",
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Salary Slip",
