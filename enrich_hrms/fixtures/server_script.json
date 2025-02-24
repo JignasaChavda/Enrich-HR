@@ -9,7 +9,7 @@
   "doctype_event": "Before Save",
   "enable_rate_limit": 0,
   "event_frequency": "All",
-  "modified": "2025-02-10 12:30:27.595019",
+  "modified": "2025-02-24 15:55:04.984939",
   "module": "Enrich HRMS",
   "name": "Set checkin date",
   "rate_limit_count": 5,
