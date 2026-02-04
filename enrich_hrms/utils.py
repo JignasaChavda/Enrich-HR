@@ -434,7 +434,7 @@ def mark_attendance(date, shift):
 def oneshot_attendance_mark(attendance_date, company):
     data = {}
     if not company and not attendance_date:
-        frappe.throw("provide date and compnay")
+        frappe.throw("Please Provide attendance date and compnay")
     shift_types = frappe.get_all("Shift Type", fields=['name'])
     if shift_types:
         for shifts in shift_types:
