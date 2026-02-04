@@ -1,20 +1,28 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-02-03 15:40:24.197994",
+ "creation": "2026-02-04 10:30:31.144359",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "attendance_date",
   "mark_attendance",
-  "column_break_xugs",
-  "company"
+  "column_break_ecqe",
+  "company",
+  "last_activity_section",
+  "last_log"
  ],
  "fields": [
   {
+   "fieldname": "column_break_ecqe",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "attendance_date",
    "fieldtype": "Date",
-   "label": "Attendance Date"
+   "in_list_view": 1,
+   "label": "Attendance Date",
+   "reqd": 1
   },
   {
    "fieldname": "mark_attendance",
@@ -22,25 +30,35 @@
    "label": "Mark Attendance"
   },
   {
-   "fieldname": "column_break_xugs",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "last_activity_section",
+   "fieldtype": "Section Break",
+   "label": "Last Activity"
+  },
+  {
+   "fieldname": "last_log",
+   "fieldtype": "JSON",
+   "label": "Last Log",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-03 15:47:22.696220",
+ "modified": "2026-02-04 10:53:46.556985",
  "modified_by": "Administrator",
  "module": "Enrich HRMS",
  "name": "Mark Attendance",
- "owner": "jay.p@sanskartechnolab.com",
+ "owner": "Administrator",
  "permissions": [
   {
    "create": 1,

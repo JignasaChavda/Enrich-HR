@@ -15,6 +15,7 @@ frappe.ui.form.on("Mark Attendance", {
             },
             callback(r) {
                 const data = r.message || {};
+                frm.set_value("last_log", JSON.stringify({ datetime: frappe.datetime.now_datetime(), summary: data }, null, 2));
                 let html = `
                     <style>
                         .att-grid {
@@ -85,14 +86,22 @@ frappe.ui.form.on("Mark Attendance", {
 
                 dialog.set_title(__("Attendance Summary"));
                 dialog.fields_dict.msg.$wrapper.html(html);
-                dialog.set_primary_action(__("Close"), () => dialog.hide());
+                dialog.set_primary_action(__("Close"), async () => {
+                await frm.save();
+                dialog.hide();
+                });
+
             },
             error() {
                 dialog.set_title(__("Error"));
                 dialog.fields_dict.msg.$wrapper.html(
                     "<p style='color:red;'>Something went wrong.</p>"
                 );
-                dialog.set_primary_action(__("Close"), () => dialog.hide());
+                dialog.set_primary_action(__("Close"), async () => {
+                    await frm.save();
+                    dialog.hide();
+                    });
+
             }
         });
     }

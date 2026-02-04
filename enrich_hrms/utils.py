@@ -418,7 +418,7 @@ def mark_attendance(date, shift):
                     continue
                     
         import json
-        frappe.log_error(json.dumps(stats, indent=2), "Attendance Marked Stats")
+        frappe.log_error(json.dumps(stats, indent=2), f"Attendance Marked Stats | Shift : {shift} | Date : {date}")
         
         return {
             "success": True,
@@ -435,7 +435,7 @@ def oneshot_attendance_mark(attendance_date, company):
     data = {}
     if not company and not attendance_date:
         frappe.throw("provide date and compnay")
-    shift_types = frappe.get_all("Shift Type", filters={'enable_auto_attendance':1}, fields=['name'])
+    shift_types = frappe.get_all("Shift Type", fields=['name'])
     if shift_types:
         for shifts in shift_types:
             shift = shifts.name
