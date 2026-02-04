@@ -80,6 +80,7 @@ def mark_attendance(date, shift):
             "Shift Assignment",
             filters={
                 "status": "Active",
+                "docstatus":1,
                 "shift_type": shift,
                 "start_date": ["<=", date],
                 "employee": ["in", active_employee_names],
@@ -211,7 +212,6 @@ def mark_attendance(date, shift):
                     "employee": emp_name,
                     "error": str(e)
                 })
-                frappe.log_error(f"Error processing employee {emp_name}: {str(e)}", "Mark Attendance Error")
                 continue
         
         # Process employees with checkins
@@ -343,43 +343,49 @@ def mark_attendance(date, shift):
                             att_status = 'Absent'
                         
                         # Check if attendance already exists
-                        exists_atte = frappe.db.get_value('Attendance', {'employee': emp_name, 'attendance_date': checkin_date, 'docstatus': 1}, ['name'])
-                        
-                        if not exists_atte:
-                            attendance = frappe.new_doc("Attendance")
-                            attendance.employee = emp_name
-                            attendance.attendance_date = checkin_date
-                            attendance.shift = shift
-                            attendance.in_time = chkin_datetime
-                            attendance.out_time = chkout_datetime
-                            attendance.custom_first_chckin = first_checkin
-                            attendance.custom_last_checkout = last_checkout
-                            attendance.custom_work_hours_ = formatted_total_work_hours
-                            attendance.custom_overtime = final_OT
-                            attendance.status = att_status
-                            attendance.custom_late_entry_hours = late_entry_hours_final
-                            attendance.custom_early_exit_hours = early_exit_hours_final
-                            attendance.late_entry = att_late_entry
-                            attendance.early_exit = att_early_exit
-                            attendance.custom_remarks = att_remarks
-                            attendance.insert(ignore_permissions=True)
-                            attendance.submit()
-                            frappe.db.commit()
+                        exists_atte = frappe.db.get_value('Attendance', {'employee': emp_name, 'attendance_date': checkin_date}, ['name', 'status'])
+                        if exists_atte:
+                            atte_doc = frappe.get_doc('Attendance', exists_atte[0])
                             
-                            # Update statistics based on status
-                            if att_status == 'Present':
+                            # If previously marked Absent but check-in exists, update to Present
+                            if exists_atte[1] == 'Absent' and checkin_records:
+                                first_checkin = checkin_records[0]
+                                chkin_datetime = frappe.db.get_value('Employee Checkin', first_checkin['name'], 'time')
+                                atte_doc.status = 'Present'
+                                atte_doc.in_time = chkin_datetime
+                                atte_doc.custom_remarks = "Auto updated to Present due to check-in"
+                                atte_doc.submit()
+                                frappe.db.commit()
                                 stats["present"] += 1
-                            elif att_status == 'Half Day':
-                                stats["half_day"] += 1
-                            elif att_status == 'Absent':
-                                stats["absent"] += 1
-                                stats["absent_reasons"]["below_threshold"] += 1
+                                stats["absent"] -= 1
                         else:
-                            stats["skipped"] += 1
-                            stats["skipped_reasons"]["already_marked"] += 1
+                            # No attendance exists, proceed as usual
+                            if not checkin_records:
+                                # Mark Absent
+                                attendance = frappe.new_doc("Attendance")
+                                attendance.employee = emp_name
+                                attendance.attendance_date = date
+                                attendance.status = "Absent"
+                                attendance.insert(ignore_permissions=True)
+                                attendance.submit()
+                                frappe.db.commit()
+                                stats["absent"] += 1
+                            else:
+                                # Mark Present based on checkin
+                                first_checkin = checkin_records[0]
+                                chkin_datetime = frappe.db.get_value('Employee Checkin', first_checkin['name'], 'time')
+                                attendance = frappe.new_doc("Attendance")
+                                attendance.employee = emp_name
+                                attendance.attendance_date = date
+                                attendance.status = "Present"
+                                attendance.in_time = chkin_datetime
+                                attendance.insert(ignore_permissions=True)
+                                attendance.submit()
+                                frappe.db.commit()
+                                stats["present"] += 1
                     
-                    elif first_checkin and not last_checkout:
-                        # No checkout record found
+                    elif first_checkin and not last_checkout and datetime.now() > datetime.combine(checkin_date, frappe.utils.get_time(frappe.db.get_value('Shift Type', shift, 'end_time'))):
+                        # No checkout record found and shift time is over
                         exists_atte = frappe.db.get_value('Attendance', {'employee': emp_name, 'attendance_date': checkin_date, 'docstatus': 1}, ['name'])
                         
                         if not exists_atte:
@@ -406,7 +412,34 @@ def mark_attendance(date, shift):
                         else:
                             stats["skipped"] += 1
                             stats["skipped_reasons"]["already_marked"] += 1
-                
+                    elif first_checkin and not last_checkout and datetime.now() < datetime.combine(checkin_date, frappe.utils.get_time(frappe.db.get_value('Shift Type', shift, 'end_time'))):
+                        # No checkout record found
+                        exists_atte = frappe.db.get_value('Attendance', {'employee': emp_name, 'attendance_date': checkin_date}, ['name'])
+                        if not exists_atte:
+                            attendance = frappe.new_doc("Attendance")
+                            attendance.employee = emp_name
+                            attendance.attendance_date = checkin_date
+                            attendance.shift = shift
+                            attendance.in_time = chkin_datetime
+                            attendance.custom_first_chckin = first_checkin
+                            attendance.custom_work_hours_ = 0
+                            attendance.custom_overtime = 0
+                            attendance.status = 'Absent'
+                            attendance.custom_late_entry_hours = 0
+                            attendance.custom_early_exit_hours = 0
+                            attendance.late_entry = 0
+                            attendance.early_exit = 0
+                            attendance.custom_remarks = 'Employee on work'
+                            attendance.insert(ignore_permissions=True)
+                            # attendance.submit()
+                            frappe.db.commit()
+                            
+                            stats["absent"] += 1
+                            stats["absent_reasons"]["no_checkout"] += 1
+                        else:
+                            stats["skipped"] += 1
+                            stats["skipped_reasons"]["already_marked"] += 1
+
                 except Exception as e:
                     stats["errors"] += 1
                     stats["error_details"].append({
@@ -414,7 +447,6 @@ def mark_attendance(date, shift):
                         "date": str(checkin_date),
                         "error": str(e)
                     })
-                    frappe.log_error(f"Error processing attendance for {emp_name} on {checkin_date}: {str(e)}", "Mark Attendance Error")
                     continue
                     
         import json
